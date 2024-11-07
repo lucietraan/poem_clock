@@ -23,9 +23,8 @@ const topoem1 = [
     'My ', 'heart ', 'is ', 'heavy ', 'with ', 'the ', 'weight <br>',
     'Of ', 'those ', 'memories, ', 'and ', 'they ', 'pull ', 'me <br>',
     'Back ', 'to ', 'where ', 'I ', 'was, ', 'where ', 'I ', 'had ', 'been. <br><br>',
-    '—Sylvia Plath'
+    '—Sylvia Plath', '', '', ''
 ];
-
 
 const poem3 = []; 
 const topoem3 = [
@@ -43,7 +42,6 @@ const topoem3 = [
     'Heavy, ', 'yet ', 'so ', 'very ', 'light. <br> <br> ',
     '—Sylvia Plath'
 ];
-
 
 const poem2 = []; 
 const topoem2 = [
@@ -213,40 +211,61 @@ hoverElement.addEventListener('mouseout', () => {
 
 // Function to start displaying the poem and timer
 function startMinute() { 
-    
     const poemDiv = document.querySelector(".poem");
     poemDiv.innerHTML = poem1.join(' ');
-    
+
     const minuteDisplay = document.querySelector(".minute"); 
     const hourDisplay = document.querySelector(".hour"); 
     console.log('Timer and poem display started'); 
 
     intervalmin = setInterval(() => { 
-        minutes++;
-
+        // Loop through the poems and display them sequentially
         for (let i = 0; i < totalToppoems.length; i++) {
-        const cumulativeLength = totalToppoems.slice(0, i).reduce((sum, topoem) => sum + topoem.length, 0);
-        const currentLength = totalToppoems[i].length;
+            const cumulativeLength = totalToppoems.slice(0, i).reduce((sum, topoem) => sum + topoem.length, 0);
+            const currentLength = totalToppoems[i].length;
 
-        if (index >= cumulativeLength && index < cumulativeLength + currentLength) {
-            totalPoems[i].push(totalToppoems[i][index - cumulativeLength]);
-            poemDiv.innerHTML = totalPoems[i].join(''); 
-            index++;
-            break; 
-        } 
-    }
+            if (index >= cumulativeLength && index < cumulativeLength + currentLength) {
 
+                if (index >= cumulativeLength + currentLength - 5 && index < cumulativeLength + currentLength) {
+                    poemDiv.classList.add('shiny'); 
+                } else {
+                    poemDiv.classList.remove('shiny');
+                }
 
-    if (minutes === 60) {
+                if (index === cumulativeLength) {
+                    // Reset timer at the beginning of each new poem
+                    minutes = 0;
+                    hours = 0;
+                    minuteDisplay.textContent = String(minutes).padStart(2, '0');
+                    hourDisplay.textContent = String(hours).padStart(2, '0');
+                } 
+
+                totalPoems[i].push(totalToppoems[i][index - cumulativeLength]);
+                poemDiv.innerHTML = totalPoems[i].join(''); 
+                index++;
+                break; 
+            }
+        }
+
+        // Reset to the beginning after the last poem
+        const totalLength = totalToppoems.reduce((sum, topoem) => sum + topoem.length, 0);
+        if (index >= totalLength) {
+            index = 0; // Reset to start from poem1
+            totalPoems.forEach(poem => poem.length = 0); // Clear all displayed poems
+            poemDiv.innerHTML = ''; // Clear the poem display
+        }
+
+        // Increment minutes and handle hours increment
+        minutes++;
+        if (minutes === 60) {
             minutes = 0;
             hours++; 
             hourDisplay.textContent = String(hours).padStart(2, '0'); 
         }
-        
-        minuteDisplay.textContent = String(minutes).padStart(2, '0');
-    }, 1000); 
 
+        minuteDisplay.textContent = String(minutes).padStart(2, '0');
+    }, 1000); // Adjust this value to change the speed of the display
 }
 
-
 window.onload = startMinute;
+
